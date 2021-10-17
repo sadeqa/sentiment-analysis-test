@@ -102,3 +102,15 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# mlruns
+mlruns/
+
+# Lightning logs
+lightning_logs
+
+# Pycharm
+.idea/
+
+# models
+models/
