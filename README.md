@@ -90,10 +90,35 @@ the model with respect to each class but also with respect to each language.
 |  French | 0.8510 |  302 |
 
 ### Improvement proposition:
-To improve the performance, we can augment our dataset with new generated
-examples. One simple way to do so is to translate sample from one
-language to another. In here, we propose to generate augmented sentences 
+One possible way to improve the model performance is by augmenting the data either
+by labeling new data or generating automatically new ones. One of the most 
+common way of doing so is by translation. Normally, translating the more represented
+languages to the less represented ones to help the model perform better on those.
+In here, we propose to generate augmented sentences 
 for the english language as it lacking compared to the others 
-by translating french sentences into english and keeping the same label 
-as the meaning remains the same.
+by translating French sentences into english ( Translation model has good performance)
+and keeping the same label as the meaning remains the same. 
 
+#### Results of finetuned augmented model on 5 most present languages on validation set (20% of train)
+| lang  | accuracy  | size |   
+|---|---|---|
+|  English | 0.8148 |  831 |   
+|  Russian | 0.9376 |  657 |
+|  Indonesian | 0.8648 |  629 |
+|  Arabic | 0.8357 |  347 |
+|  French | 0.8481 |  302 |
+
+
+
+##  Models
+The best model finetuned on train, can be downloaded [here](https://drive.google.com/file/d/1ilSiREEcshWA49ks0_57cOVA8RO8b4Cc/view?usp=sharing).
+
+The best model finetuned on train augmented can be downloaded [here](https://drive.google.com/file/d/1BRqRcVmFqe1zaqJWsUyFpl6eK3fWD6Xq/view?usp=sharing).
+
+## Run Inference
+To run inference, you can run:
+```
+make inference
+```
+Just make sure the paths for data and models are correct in the Makefile and 
+the device to run on.

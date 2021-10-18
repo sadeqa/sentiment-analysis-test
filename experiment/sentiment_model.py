@@ -46,6 +46,11 @@ class SentimentModel(LightningModule):
         for param in self.process_model.roberta.parameters():
             param.requires_grad = False
 
+    def load_model(self, checkpoint_path: str):
+        """ loads checkpoint to model"""
+        state_dict = torch.load(checkpoint_path)['state_dict']
+        self.load_state_dict(state_dict)
+
     def forward(
             self,
             x,
