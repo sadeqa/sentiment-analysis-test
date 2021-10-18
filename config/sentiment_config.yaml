@@ -3,7 +3,7 @@ trainer:
   logger:
     - class_path: pytorch_lightning.loggers.MLFlowLogger
       init_args:
-        experiment_name: Sentiment Classification
+        experiment_name: Sentiment Classification augmented
         tracking_uri: http://localhost:5000
 
   checkpoint_callback: true
@@ -24,8 +24,8 @@ trainer:
   num_nodes: 1
   num_processes: 1
   devices: null
-  gpus: null
-  auto_select_gpus: false
+  gpus: 1
+  auto_select_gpus: true
   tpu_cores: null
   ipus: null
   log_gpu_memory: null
@@ -77,12 +77,12 @@ model:
   lr: 0.00001
   n_classes: 3
 data:
-  train_data_path: data/train_clean.csv
+  train_data_path: data/train_augmented.csv
   val_data_path: data/val_clean.csv
   batch_size: 1
-  num_workers: 0
+  num_workers: 8
   model_name: cardiffnlp/twitter-xlm-roberta-base-sentiment
-  max_length: 256
+  max_length: 128
   train_transforms: null
   val_transforms: null
   test_transforms: null

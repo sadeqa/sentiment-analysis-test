@@ -38,22 +38,13 @@ class SentimentModel(LightningModule):
             n_classes=n_classes,
         )
 
-        self._setup_models(
-            pretrained_model_name_or_path=pretrained_model_name_or_path,
-            **kwargs,
-        )
-
         self.loss = CrossEntropyLoss()
-
-    def _setup_models(
-            self,
-            pretrained_model_name_or_path: str = "cardiffnlp/twitter-xlm-roberta-base-sentiment",
-            **kwargs,
-    ):
         self.process_model = AutoModelForSequenceClassification.from_pretrained(
             pretrained_model_name_or_path=pretrained_model_name_or_path,
             **kwargs,
         )
+        for param in self.process_model.roberta.parameters():
+            param.requires_grad = False
 
     def forward(
             self,
@@ -107,11 +98,9 @@ class SentimentModel(LightningModule):
             y_pred (torch.Tensor): the predicted tensor
             y_target (torch.Tensor): the target tensor
         """
-        if self.logger is None:
-            return None
-        try:
+        if self.logger:
             self.logger.log_metrics(
-                metrics={"Training/training_loss": loss.item()},
+                metrics={"Training/training_loss": loss.detach().item()},
                 step=self.n_training_examples,
             )
             for metric_name, metric in self.metrics_dict_train.items():
@@ -122,8 +111,6 @@ class SentimentModel(LightningModule):
                     metrics={f"Training/{metric_name}_step": value.item()},
                     step=self.n_training_examples,
                 )
-        except Exception as e:
-            logger.warning(f"Error occurred while logging with error: {e}")
 
         self.n_training_examples += 1
 
@@ -134,7 +121,6 @@ class SentimentModel(LightningModule):
         loss = self.loss(y_pred, y_target)  # Compute the loss
         y_pred = self.postprocess_eval(y_pred)
         if self.logger:
-            # try:
             for metric_name, metric in self.metrics_dict_val.items():
                 self.log(
                     f"Validation/{metric_name}_step",
@@ -144,13 +130,11 @@ class SentimentModel(LightningModule):
                     ),
                 )
             # We log to progress bar and pass it on
-            self.log("val_loss", loss, prog_bar=True)
-        # except Exception as e:
-        #    logger.warning(f"Error occurred while logging with error: {e}")
+            self.log("val_loss", loss.detach(), prog_bar=True)
         return {"val_loss": loss}
 
     def do_validation_inference(self, x: Dict[str, torch.Tensor]) -> torch.Tensor:
-        return self.forward(x, logging_batch=True)
+        return self.forward(x)
 
     def test_step(self, batch, *args, **kwargs):
         input_value, y_target = batch
@@ -159,19 +143,16 @@ class SentimentModel(LightningModule):
         loss = self.loss(y_pred, y_target)  # Compute the loss
         y_pred = self.postprocess_eval(y_pred)
         if self.logger:
-            try:
-                for metric_name, metric in self.metrics_dict_val.items():
-                    self.log(
-                        f"Test/{metric_name}_step",
-                        metric(
-                            torch.argmax(y_pred, dim=1),
-                            y_target,
-                        ),
-                    )
-                # We log to progress bar and pass it on
-                self.log("test_loss", loss, prog_bar=True)
-            except Exception as e:
-                logger.warning(f"Error occurred while logging with error: {e}")
+            for metric_name, metric in self.metrics_dict_val.items():
+                self.log(
+                    f"Test/{metric_name}_step",
+                    metric(
+                        torch.argmax(y_pred, dim=1),
+                        y_target,
+                    ),
+                )
+            # We log to progress bar and pass it on
+            self.log("test_loss", loss, prog_bar=True)
         return {"test_loss": loss}
 
     def configure_optimizers(self, **kwargs):
@@ -184,22 +165,13 @@ class SentimentModel(LightningModule):
 
     def training_epoch_end(self, epoch_output):
         for metric_name, metric in self.metrics_dict_train.items():
-            try:
-                self.log(f"Training/{metric_name}_epoch", metric.compute())
-            except Exception as e:
-                logger.warning(f"Error occurred while logging with error: {e}")
+            self.log(f"Training/{metric_name}_epoch", metric.compute())
 
     def validation_epoch_end(self, outputs):
         for metric_name, metric in self.metrics_dict_val.items():
-            try:
-                self.log(f"Validation/{metric_name}_total", metric.compute())
-            except Exception as e:
-                logger.warning(f"Error occurred while logging with error: {e}")
+            self.log(f"Validation/{metric_name}_total", metric.compute())
 
     def test_epoch_end(self, outputs):
         for metric_name, metric in self.metrics_dict_val.items():
-            try:
-                self.log(f"Test/{metric_name}_total", metric.compute())
-            except Exception as e:
-                logger.warning(f"Error occurred while logging with error: {e}")
+            self.log(f"Test/{metric_name}_total", metric.compute())
         return outputs
