@@ -7,7 +7,6 @@ from tqdm import tqdm
 from transformers import AutoTokenizer
 
 from experiment.sentiment_model import SentimentModel
-from experiment.sentiment_tokenizer import SentimentTokenizer
 from experiment.sentiment_datamodule import LABEL_TO_ID
 
 
