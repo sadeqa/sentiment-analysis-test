@@ -61,7 +61,7 @@ use a pretrained XLM-Roberta on sentiment detection on tweets [model page](https
 and simply freeze all the backbone layers as they are already trained to
 extract the important signal and only finetune the classifier's weights.
 
-### Run the training
+### 🏋🏿 Run the training
 To run the training, you can change the parameters you want in the 
 [sentiment_config.yaml](https://github.com/sadeqa/sentiment-analysis-test/blob/master/config/sentiment_config.yaml) 
 and run the following:
@@ -89,7 +89,7 @@ the model with respect to each class but also with respect to each language.
 |  Arabic | 0.8502 |  347 |
 |  French | 0.8510 |  302 |
 
-### Improvement proposition:
+### 👨‍🔬 Improvement proposition:
 One possible way to improve the model performance is by augmenting the data either
 by labeling new data or generating automatically new ones. One of the most 
 common way of doing so is by translation. Normally, translating the more represented
@@ -110,12 +110,12 @@ and keeping the same label as the meaning remains the same.
 
 
 
-##  Models
+## 🧠 Models
 The best model finetuned on train, can be downloaded [here](https://drive.google.com/file/d/1ilSiREEcshWA49ks0_57cOVA8RO8b4Cc/view?usp=sharing).
 
 The best model finetuned on train augmented can be downloaded [here](https://drive.google.com/file/d/1BRqRcVmFqe1zaqJWsUyFpl6eK3fWD6Xq/view?usp=sharing).
 
-## Run Inference
+## 📈 Run Inference
 To run inference, you can run:
 ```
 make inference
